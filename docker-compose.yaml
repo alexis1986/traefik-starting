@@ -1,0 +1,39 @@
+version: "3.8"
+
+networks:
+  app1:
+
+services: 
+  traefik:
+    image: traefik:v2.2.1
+    container_name: traefik
+    ports: 
+      - 80:80
+      - 8080:8080
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml
+    networks: 
+      - app1
+
+  nginx1:
+    image: nginx
+    container_name: nginx1
+    labels: 
+      - "traefik.http.routers.router0.rule=Host(`127.0.0.1`)"
+      - "traefik.docker.network=app1"
+    volumes: 
+      - ./hola1.html:/usr/share/nginx/html/index.html:ro
+    networks: 
+      - app1
+  
+  nginx2:
+    image: nginx
+    container_name: nginx2
+    labels:
+      - "traefik.http.routers.router1.rule=Host(`127.0.0.1`) && PathPrefix(`/test`)"
+      - "traefik.docker.network=app1"
+    volumes: 
+      - ./hola2.html:/usr/share/nginx/html/test/index.html:ro
+    networks: 
+      - app1
