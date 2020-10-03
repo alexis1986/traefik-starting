@@ -21,6 +21,7 @@ services:
     container_name: nginx1
     labels: 
       - "traefik.http.routers.router0.rule=Host(`127.0.0.1`)"
+      - "traefik.http.services.lb.loadbalancer.server.port=80"
       - "traefik.docker.network=app1"
     volumes: 
       - ./hola1.html:/usr/share/nginx/html/index.html:ro
@@ -31,9 +32,22 @@ services:
     image: nginx
     container_name: nginx2
     labels:
-      - "traefik.http.routers.router1.rule=Host(`127.0.0.1`) && PathPrefix(`/test`)"
+      - "traefik.http.routers.router1.rule=Host(`127.0.0.1`)"
+      - "traefik.http.services.lb.loadbalancer.server.port=80"
       - "traefik.docker.network=app1"
     volumes: 
-      - ./hola2.html:/usr/share/nginx/html/test/index.html:ro
+      - ./hola2.html:/usr/share/nginx/html/index.html:ro
+    networks: 
+      - app1
+
+  nginx3:
+    image: nginx
+    container_name: nginx3
+    labels:
+      - "traefik.http.routers.router2.rule=Host(`127.0.0.1`)"
+      - "traefik.http.services.lb.loadbalancer.server.port=80"
+      - "traefik.docker.network=app1"
+    volumes: 
+      - ./hola3.html:/usr/share/nginx/html/index.html:ro
     networks: 
       - app1
